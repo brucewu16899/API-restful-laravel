@@ -48,10 +48,13 @@ Supplement(add) into composer.json
 
 - app\providers\AppServiceProvider.php:
 
+
 	//DINGO API IM HERE
     Dingo\Api\Provider\LaravelServiceProvider::class,
 
+
 - composer:
+
 
 	php artisan vendor:publish --provider="Dingo\Api\Provider\LaravelServiceProvider"
 
@@ -59,7 +62,9 @@ Supplement(add) into composer.json
 
 	php aritsan vendor:publish
 
+
 - .env:
+
 
 	API_STANDARDS_TREE=vnd
 	API_SUBTYPE=apirestful
@@ -71,7 +76,9 @@ Supplement(add) into composer.json
 	API_STRICT=false
 	API_DEBUG=true
 
+
 - routes.php:
+
 
 	$api = app('Dingo\Api\Routing\Router');
 
@@ -82,4 +89,5 @@ Supplement(add) into composer.json
 	$api->version('v1',function($api){
 		$api->get('hello','App\Http\Controllers\HomeController@index');
 	});
+
 
