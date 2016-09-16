@@ -66,8 +66,7 @@ class HomeController extends Controller
 
         $role->attachPermission($permission);
 
-        return $role->permissions;
-        // return $this->response->created();
+        return $this->response->created();
 
     }
 
