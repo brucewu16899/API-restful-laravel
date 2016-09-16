@@ -151,6 +151,9 @@ return [
         //ZIZACO ENTRUST IM HERE
         Zizaco\Entrust\EntrustServiceProvider::class,
 
+        //JWTAUTH IM HERE
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+
 
     ],
 
@@ -202,6 +205,10 @@ return [
 
         //ZIZACO ENTRUST IM HERE
         'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
+
+        //JWTAUTH IM HERE
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 
     ],
 

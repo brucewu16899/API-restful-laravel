@@ -80,7 +80,7 @@ class HomeController extends Controller
         
         $role = Role::where('name', $roleParam)->first();
 
-        return $role->perms;
+        return $this->response->array($role->perms);
 
     }
 

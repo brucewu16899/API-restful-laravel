@@ -277,3 +277,42 @@ Thêm:
 	        'api/*'
 	    ];
 	}
+
+
+
+
+
+
+
+
+##JWTAuth
+
+####Config/app.php
+
+	Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+
+
+	'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+	'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+
+
+####Conposer: 
+
+To create config\jwt.php
+
+	php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\JWTAuthServiceProvider"
+
+
+	>>Result: Copied File [\vendor\tymon\jwt-auth\src\config\config.php] To [\config\jwt.php]
+
+
+To create key JWT in `config/app/php`
+
+	php artisan jwt:generate
+
+####kernel.php
+
+	'jwt.auth' => \Tymon\JWTAuth\Middleware\GetUserFromToken::class,
+	'jwt.refresh' => \Tymon\JWTAuth\Middleware\RefreshToken::class,
+
+
