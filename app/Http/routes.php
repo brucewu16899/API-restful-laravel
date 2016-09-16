@@ -17,7 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 $api->version('v1',function($api){
-	$api->get('hello','App\Http\Controllers\HomeController@index');
+
+	//http://localhost:8000/api/users
+	$api->get('users','App\Http\Controllers\HomeController@index');
 });
 

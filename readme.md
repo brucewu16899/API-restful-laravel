@@ -183,3 +183,66 @@ After you use composer to migration:
 	permissions — stores permission records
 	role_user — stores many-to-many relations between roles and users
 	permission_role — stores many-to-many relations between roles and permissions
+
+
+###Model
+
+Composer:
+
+	php artisan make:model Role
+
+	php artisan make:model Permission
+
+
+####app\Role.php using the following example:
+
+	<?php namespace App;
+
+	use Zizaco\Entrust\EntrustRole;
+
+	class Role extends EntrustRole
+	{
+
+	}
+
+
+####app\Permission.php
+
+	<?php namespace App;
+
+	use Zizaco\Entrust\EntrustPermission;
+
+	class Permission extends EntrustPermission
+	{
+
+	}
+
+####app\User.php
+
+Add this EntrustUserTrait to User.php (model)
+		
+	<?php
+
+	use Zizaco\Entrust\Traits\EntrustUserTrait;
+
+	class User extends Eloquent
+	{
+	    use EntrustUserTrait; // add this trait to your user model
+
+	    ...
+	}	
+
+
+
+####Model User.php
+
+    use Authenticatable, Authorizable, CanResetPassword, EntrustUseTrait;
+    ->
+    use Authenticatable, CanResetPassword, EntrustUseTrait;
+
+
+Intro data to tables: roles, permission
+
+IF use `Seeder` then `Don't` forget
+
+	composer dump-autoload
