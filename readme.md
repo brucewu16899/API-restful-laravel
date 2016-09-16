@@ -91,3 +91,95 @@ Supplement(add) into composer.json
 	});
 
 
+##laracasts/generators & zizaco/entrust
+ 
+####app\Providers\AppServiceProvider.php
+
+
+    public function register()
+    {
+        if ($this->app->environment() == 'local') {
+            $this->app->register('Laracasts\Generators\GeneratorsServiceProvider');
+        }
+    }
+
+
+####Then in your config/app.php add
+
+in the `providers` array:
+
+	Zizaco\Entrust\EntrustServiceProvider::class,
+
+the `aliases` array:
+
+	'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
+
+####Kernel.php
+you also  need to add to `routeMiddleware` :
+
+    'role' => \Zizaco\Entrust\Middleware\EntrustRole::class,
+    'permission' => \Zizaco\Entrust\Middleware\EntrustPermission::class,
+    'ability' => \Zizaco\Entrust\Middleware\EntrustAbility::class,
+
+
+####Composer:
+
+	php artisan vendor:publish
+
+and:
+
+	php artisan entrust:migration
+
+
+* IF ERORR [BEGIN]
+
+	PHP Fatal error:  Class name must be a valid object or a string in G:\simon\apirestful\vendor\zizaco\entrust\src\commands\MigrationCommand.php on line 86
+
+
+	[Symfony\Component\Debug\Exception\FatalErrorException]
+	Class name must be a valid object or a string
+
+
+You can fix: http://stackoverflow.com/questions/34529621/how-to-fix-in-laravel-5-2-zizaco-entrustmigration-class-name-validation
+
+in vendor/zizaco/entrust/src/commands/MigrationCommand.php on line 86
+
+remove line :
+
+    $usersTable  = Config::get('auth.table');
+    $userModel   = Config::get('auth.model');
+
+add line :
+
+	$usersTable  = Config::get('auth.providers.users.table');
+	$userModel   = Config::get('auth.providers.users.model');
+
+and config/auth.php file write provider line as like me :
+
+	'providers' => [
+	    'users' => [
+	        'driver' => 'eloquent',
+	        'model' => App\User::class,
+	        'table' => 'users',
+	    ],
+
+	    // 'users' => [
+	    //     'driver' => 'database',
+	    //     'table' => 'users',
+	    // ],
+	],
+
+* END EROR [FINISH]
+
+
+open `database/migrations/` you can see file migration of `<timestamp>_entrust_setup_tables.php`.
+After you use composer to migration:
+		
+	php artisan migration
+
+ 4 new tables will be present:		
+
+	roles — stores role records
+	permissions — stores permission records
+	role_user — stores many-to-many relations between roles and users
+	permission_role — stores many-to-many relations between roles and permissions

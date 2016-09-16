@@ -64,4 +64,17 @@ return [
         'expire' => 60,
     ],
 
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\User::class,
+            'table' => 'users',
+        ],
+
+        // 'users' => [
+        //     'driver' => 'database',
+        //     'table' => 'users',
+        // ],
+    ],
+
 ];

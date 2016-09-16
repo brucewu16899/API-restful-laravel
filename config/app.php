@@ -148,6 +148,10 @@ return [
         //DINGO API IM HERE
         Dingo\Api\Provider\LaravelServiceProvider::class,
 
+        //ZIZACO ENTRUST IM HERE
+        Zizaco\Entrust\EntrustServiceProvider::class,
+
+
     ],
 
     /*
@@ -195,6 +199,9 @@ return [
         'URL'       => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
+
+        //ZIZACO ENTRUST IM HERE
+        'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
 
     ],
 
