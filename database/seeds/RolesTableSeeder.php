@@ -11,19 +11,17 @@ class RolesTableSeeder extends Seeder
 {
     public function run()
     {
-        // TestDummy::times(20)->create('App\Post');
+		// $owner = new Role();
+		// $owner->name         = 'owner';
+		// $owner->display_name = 'Project Owner'; // optional
+		// $owner->description  = 'User is the owner of a given project'; // optional
+		// $owner->save();
 
-        $owner = new Role();
-        $owner->name = "owner";
-        $owner->display_name = "Owner Project";
-        $owner->description = "user is Owner";
-        $owner->save();
-
-        $owner = new Role();
-        $owner->name = "admin";
-        $owner->display_name = "Admin User";
-        $owner->description = "user is Admin";
-        $owner->save();
+		$admin = new Role();
+		$admin->name         = 'admin';
+		$admin->display_name = 'User Administrator'; // optional
+		$admin->description  = 'User is allowed to manage and edit other users'; // optional
+		$admin->save();
 
     }
 }

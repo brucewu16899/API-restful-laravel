@@ -246,3 +246,20 @@ Intro data to tables: roles, permission
 IF use `Seeder` then `Don't` forget
 
 	composer dump-autoload
+
+
+
+
+
+-------
+
+####Controller.php
+
+Thêm:
+
+	use Dingo\Api\Routing\Helpers;
+
+	abstract class Controller extends BaseController
+	{
+	    use AuthorizesRequests, DispatchesJobs, ValidatesRequests, Helpers;
+	}
