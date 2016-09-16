@@ -46,14 +46,14 @@ Supplement(add) into composer.json
 
 ###Step 1:
 
-- app\providers\AppServiceProvider.php:
+####app\providers\AppServiceProvider.php:
 
 
 	//DINGO API IM HERE
     Dingo\Api\Provider\LaravelServiceProvider::class,
 
 
-- composer:
+#####composer:
 
 
 	php artisan vendor:publish --provider="Dingo\Api\Provider\LaravelServiceProvider"
@@ -63,7 +63,7 @@ Supplement(add) into composer.json
 	php aritsan vendor:publish
 
 
-- .env:
+####.env:
 
 
 	API_STANDARDS_TREE=vnd
@@ -77,7 +77,7 @@ Supplement(add) into composer.json
 	API_DEBUG=true
 
 
-- routes.php:
+####routes.php:
 
 
 	$api = app('Dingo\Api\Routing\Router');
