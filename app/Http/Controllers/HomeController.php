@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 
 use App\User;
 use App\Role;
+use App\Permission;
+
 
 class HomeController extends Controller
 {
@@ -64,7 +66,22 @@ class HomeController extends Controller
 
         $role->attachPermission($permission);
 
-        return $this->response->created();
+        return $role->permissions;
+        // return $this->response->created();
+
+    }
+
+
+    /*
+    | Gọi quyền hạn của 1 vai trò
+    | User id `1` có quyền la gi
+    | http://localhost:8000/api/role/owner/permissions
+    */
+    public function getPermissions($roleParam){
+        
+        $role = Role::where('name', $roleParam)->first();
+
+        return $role->perms;
 
     }
 
