@@ -68,6 +68,32 @@ class AuthController extends Controller
         return $this->response->array(compact('token'))->setStatusCode(200);
     }
 
+    public function getToken(){
+        $token = JWTAuth::getToken();
+
+        if(!$token){
+            return $this->response->errorUnauthorized("Token is invalid");
+        }
+
+        try {
+            return $refreshedToken = JWTAuth::refresh($token);
+        } catch (Exception $e) {
+            $this->response->error('Something went wrong');
+        }
+
+        return $this->response->array(compact('refreshedToken'));
+    }
+
+    // public function destroy(){
+    //     $user = JWTAuth::parseToken()->authenticate();
+
+    //     if(!$user){
+    //         //fail
+    //     }
+
+    //     //processor delete
+    //     $user->delete();
+    // }
 
     // public function getAuthenticatedUser(){
 

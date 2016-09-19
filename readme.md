@@ -42,6 +42,9 @@ Supplement(add) into composer.json
 
 #action
 
+------------------------------------------------------------------------------------------
+
+
 ##dingo/api
 
 ####Config/app.php:
@@ -87,6 +90,10 @@ Supplement(add) into composer.json
 	$api->version('v1',function($api){
 		$api->get('hello','App\Http\Controllers\HomeController@index');
 	});
+
+
+
+------------------------------------------------------------------------------------------
 
 
 ##laracasts/generators & zizaco/entrust
@@ -279,7 +286,7 @@ Thêm:
 
 
 
-
+------------------------------------------------------------------------------------------
 
 
 ##JWTAuth
@@ -347,7 +354,7 @@ To create key JWT in `config/app.php`
 
 		$api->get('users', 'App\Http\Controllers\Auth\AuthController@index');
 		$api->get('users/{user_id}', 'App\Http\Controllers\Auth\AuthController@show');
-
+		$api->get('token', 'App\Http\Controllers\Auth\AuthController@getToken');
 	});
 
 
@@ -356,6 +363,9 @@ To create key JWT in `config/app.php`
 
  Try catch API
 
+
+use Illuminate\Http\Request;
+use JWTAuth;
 
     public function authenticate(Request $request){
         $credentials = $request->only('email','password');
@@ -417,3 +427,230 @@ To create key JWT in `config/app.php`
     }
 
 
+Note, commit __construct:
+
+    // public function __construct()
+    // {
+    //     $this->middleware('guest', ['except' => 'getLogout']);
+    // }
+
+
+
+------------------------------------------------------------------------------------------
+
+##OAUTH
+
+####Add the following to `config/app.php`
+
+	LucaDegasperi\OAuth2Server\Storage\FluentStorageServiceProvider::class,
+	LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider::class,
+
+
+    'Authorizer' => LucaDegasperi\OAuth2Server\Facades\Authorizer::class,
+
+####app/Http/kernel.php
+
+Add the following  line to the file `app/Http/kernel.php` at the $middleware array
+
+	\LucaDegasperi\OAuth2Server\Middleware\OAuthExceptionHandlerMiddleware::class,
+
+Add the following to $routeMiddleware aray:
+
+	'oauth' => \LucaDegasperi\OAuth2Server\Middleware\OAuthMiddleware::class,
+	'oauth-user' => \LucaDegasperi\OAuth2Server\Middleware\OAuthUserOwnerMiddleware::class,
+	'oauth-client' => \LucaDegasperi\OAuth2Server\Middleware\OAuthClientOwnerMiddleware::class,
+	'check-authorization-params' => \LucaDegasperi\OAuth2Server\Middleware\CheckAuthCodeRequestMiddleware::class,
+
+
+Comment `VerifyCsrfToken`
+
+	    // \App\Http\Middleware\VerifyCsrfToken::class,
+
+Add the following to $routeMiddleware:
+
+	    'csrf' =>  \App\Http\Middleware\VerifyCsrfToken::class,
+
+
+
+####composer
+
+	php artisan vendor:publish
+
+Run migrate to create tables require
+
+	php artisan migrate
+
+
+
+####App\Providers:
+
+Create `OAuthServiceProvider.php`
+
+	php artisan make:provider OAuthServiceProvider
+
+
+Add the following at the `OAuthServiceProvider.php`:
+
+	<?php
+
+	namespace App\Providers;
+
+	use App\User;
+	use Dingo\Api\Auth\Auth;
+	use Dingo\Api\Auth\Provider\OAuth2;
+	use Illuminate\Support\ServiceProvider;
+
+	class OAuthServiceProvider extends ServiceProvider{
+		
+		public function boot(){
+
+			$this->app[Auth::class]->extend('oauth', function ($app){
+				
+				$provider = new OAuth2($app['oauth2-server.authorizer']->getChecker());
+
+				$provider->setUserResolver(function ($id){
+					//logic to return a user by their ID
+					$user = User::find($id);
+					reutrn $user;
+				});
+
+				$provider->setClientResolver(function ($id){
+					//logic to return a client by their ID
+				});
+				return $provider;
+			});
+		}
+
+		public function register(){
+			//
+		}
+
+	}
+
+Add this to config/app.php as a dependency
+
+	App\Providers\OAuthServiceProvider::class,
+
+####composer
+
+	composer dump-autoload
+
+
+####config/oauth2.php
+
+Add the following at the `grant_types` :
+
+	'grant_types' => [
+		'password' => [
+			'class' => '\League\OAuth2\Server\Grant\PasswordGrant',
+			'callback' => '\App\Verifiers\PasswordGrantVerifier@verify',
+			'access_token_ttl' => 2592000,
+		],
+		'refresh_token' => [
+			'class' => '\League\OAuth2\Server\Grant\RefreshTokenGrant',
+			'access_token_ttl' => 2592000,
+			'refresh_token_ttl' => 2592000
+		]
+	],
+
+
+continue:
+
+	'access_token_ttl' => 2592000,
+
+
+####Composer:
+
+	php artisan make:model OAuthClient
+
+Model `OAuthClient.php`:
+
+	class OAuthClient extends Model
+	{
+	    protected $table = 'oauth_clients';
+
+	    protected $fillable = ['id', 'secret', 'name'];
+	    
+	}
+
+####Composer
+
+	php artisan make:seed OAuthClientTableSeeder
+
+####database/seeds/OAuthClientTableSeeder.php:
+
+Add the following at the `OAuthClientTableSeeder`:
+
+	class OAuthClientTableSeeder extends Seeder
+	{
+	    public function run()
+	    {
+	        //create website client secret
+
+	        \App\OAuthClient::create([
+	        	'id' => 'g3b259fdeheh23hh44j3h2j4g',
+	        	'secret' => '3d7fh3h4h444g53g233371s7gf2f2v34v',
+	        	'name' => 'Android'
+	    	]);
+
+	        \App\OAuthClient::create([
+	        	'id' => 'g3b259fdfheh22h44j3h2j4g',
+	        	'secret' => '3d7fh3h4h474g43g233371s7gf2f2v34v',
+	        	'name' => 'website'
+	    	]);
+	    }
+	}
+
+####composer
+Run composer dump-autoload to system receive class `OAuthClientTableSeeder`:
+
+	composer dump-autoload
+
+Run seed to into data to table `oauth_clients`
+
+	php artisan db:seed --class=OAuthClientTableSeeder
+
+##app\Verifiers `folder`
+
+Create folder & file:  `app\Verifiers\PasswordGrantVerifier.php`
+
+
+	<?php
+
+	namespace App\Verifiers;
+
+	use Illuminate\Support\Facades\Auth;
+
+	class PasswordGrantVerifier{
+
+		public function verify($username, $password){
+
+			$credentials = [
+				'email' => $username,
+				'password' => $password,
+			];
+
+			if(Auth::once($credentials)){
+				return Auth::user()->id;
+			}
+
+			return false;
+		}
+	}
+
+Run composer:
+
+	composer dump-autoload
+
+
+####routes.php
+
+Add the following at the `routes.php`:
+
+	use LucaDegasperi\OAuth2Server\Authorizer;
+
+	$api->version('v1', function($api){
+		$api->post('oauth/access_token', function(){
+			return Authorizer::issueAccessToken();
+		});
+	});

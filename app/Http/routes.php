@@ -11,16 +11,28 @@
 |
 */
 
+use LucaDegasperi\OAuth2Server\Authorizer;
+
+
 $api = app('Dingo\Api\Routing\Router');
 
-Route::get('/', function () {
-    return view('welcome');
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+
+
+$api->version('v1', function ($api) {
+    $api->post('oauth/access_token', function() {
+        return Authorizer::issueAccessToken();
+    });
 });
+
 
 
 $api->version('v1',function($api){
 
-	//http://localhost:8000/api/users
+
 	$api->get('users','App\Http\Controllers\HomeController@index');
 	$api->get('users/{user_id}/roles/{role_name}','App\Http\Controllers\HomeController@attachUserRole');
 	$api->get('users/{user_id}/roles','App\Http\Controllers\HomeController@getUserRole');
@@ -30,6 +42,10 @@ $api->version('v1',function($api){
 
 	$api->post('authenticate', 'App\Http\Controllers\Auth\AuthController@authenticate');
 
+	$api->post('oauth/access_token', function(){
+		return Authorizer::issueAccessToken();
+	});
+
 });
 
 
@@ -38,6 +54,8 @@ $api->version('v1', ['middleware' => 'jwt.auth'], function($api){
 	$api->get('users', 'App\Http\Controllers\Auth\AuthController@index');
 	$api->get('users/{user_id}', 'App\Http\Controllers\Auth\AuthController@show');
 	$api->get('token', 'App\Http\Controllers\Auth\AuthController@getToken');
+
+	$api->post('delete', 'App\Http\Controllers\Auth\AuthController@destroy');
 
 });
 

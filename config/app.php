@@ -154,6 +154,10 @@ return [
         //JWTAUTH IM HERE
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 
+        //OAUTH IM HERE
+        LucaDegasperi\OAuth2Server\Storage\FluentStorageServiceProvider::class,
+        LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider::class,
+        App\Providers\OAuthServiceProvider::class,
 
     ],
 
@@ -209,6 +213,9 @@ return [
         //JWTAUTH IM HERE
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+
+        // 'Authorizer' => LucaDegasperi\OAuth2Server\Facades\Authorizer::class,
+        'Authorizer' => LucaDegasperi\OAuth2Server\Authorizer::class,
 
     ],
 

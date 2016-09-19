@@ -24,7 +24,7 @@ class HomeController extends Controller
     /*
     | Thêm quyền cho user.
     | User id `1` có vai trò `owner`
-    | http://localhost:8000/api/users/1/roles/owner
+    | http://api.com/api/users/1/roles/owner
     */
     public function attachUserRole($userId, $role)
     {
@@ -42,7 +42,7 @@ class HomeController extends Controller
     /*
     | Kiểm tra xem User này vai trò gì
     | User id `1` có vai trò là gì
-    | http://localhost:8000/api/users/1/roles
+    | http://api.com/api/users/1/roles
     */
     public function getUserRole($userId){
         return User::find($userId)->roles;
@@ -51,8 +51,8 @@ class HomeController extends Controller
 
     /*
     | Thêm quyền hạn cho vai trò
-    | User id `1` có quyền la gi
-    | http://localhost:8000/api/users/1/roles
+    | Admin thì có những quyền hạn gì
+    | http://api.com/api/role/permission/add
     */
     public function attachPermission(Request $request){
         $parametters = $request->only('permission', 'role');
@@ -73,8 +73,8 @@ class HomeController extends Controller
 
     /*
     | Gọi quyền hạn của 1 vai trò
-    | User id `1` có quyền la gi
-    | http://localhost:8000/api/role/owner/permissions
+    | Kiểm tra xem admin có những quyền gì
+    | http://api.com/api/role/owner/permissions
     */
     public function getPermissions($roleParam){
         
