@@ -27,5 +27,17 @@ $api->version('v1',function($api){
 
 	$api->post('role/permission/add', 'App\Http\Controllers\HomeController@attachPermission');
 	$api->get('role/{role_name}/permissions', 'App\Http\Controllers\HomeController@getPermissions');
+
+	$api->post('authenticate', 'App\Http\Controllers\Auth\AuthController@authenticate');
+
+});
+
+
+$api->version('v1', ['middleware' => 'jwt.auth'], function($api){
+
+	$api->get('users', 'App\Http\Controllers\Auth\AuthController@index');
+	$api->get('users/{user_id}', 'App\Http\Controllers\Auth\AuthController@show');
+	$api->get('token', 'App\Http\Controllers\Auth\AuthController@getToken');
+
 });
 

@@ -8,6 +8,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
+use Illuminate\Http\Request;
+use JWTAuth;
+
 class AuthController extends Controller
 {
     /*
@@ -28,25 +31,88 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
-        $this->middleware('guest', ['except' => 'getLogout']);
+    // public function __construct()
+    // {
+    //     $this->middleware('guest', ['except' => 'getLogout']);
+    // }
+
+    //after login, create token
+    public function authenticate(Request $request){
+        $credentials = $request->only('email','password');
+
+        $login = filter_var($request->input('email'), FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+        try {
+
+            if($login == 'email'){
+                $loginCredentials = [
+                                'email' => $credentials['email'],
+                                'password' => $credentials['password']
+                                ];
+            }else{
+                $loginCredentials = [
+                                'phone' => $credentials['email'],
+                                'password' => $credentials['password']
+                                ];
+            }
+
+
+            if(!$token = JWTAuth::attempt($loginCredentials)){
+                return $this->response->errorUnauthorized();
+            }
+
+        } catch (JWTException $ex) {
+            return $this->response->errorInternal();
+        }
+
+        return $this->response->array(compact('token'))->setStatusCode(200);
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
-        ]);
+
+    // public function getAuthenticatedUser(){
+
+    //     try{
+
+    //         if(! $user = JWTAuth::parseToken()->toUser()){
+    //             return response()->json(['user not found'],404);
+    //         }
+
+    //     }catch(JWTException $ex) {
+    //         return $this->response->errorInternal();
+    //     }
+
+    //     return $this->response->item($user, new UserTransformer)->setStatusCode(200);
+    // }
+
+
+    //get all user
+    public function index(){
+
+        try {
+
+            return User::all();
+
+        } catch (Exception $e) {
+            return $e;
+        }
+        
     }
+
+    public function show($user_id){
+
+        try {
+            $user = JWTAuth::parseToken()->toUser();
+
+            if(!$user){
+                return $this->response->errorNotFound("User not found");
+            }
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $ex) {
+            return $this->response->error('Something went wrong');
+        }
+        return $this->response->array(compact('user'))->setStatusCode(200);
+        
+    }
+
 
     /**
      * Create a new user instance after a valid registration.

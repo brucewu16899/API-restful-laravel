@@ -43,7 +43,23 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         if ($e instanceof ModelNotFoundException) {
+
             $e = new NotFoundHttpException($e->getMessage(), $e);
+            
+        }
+
+        if($e instanceof TokenExpiredException){
+
+            return response()->json(['token_expired'], 401);
+            
+        }else if($e instanceof TokenInvalidException){
+            
+            return response()->json(['token_invalid'], 401);
+
+        }else if($e instanceof TokenBacklistedException){
+            
+            return response()->json(['token_backlisted'], 500);
+
         }
 
         return parent::render($request, $e);
